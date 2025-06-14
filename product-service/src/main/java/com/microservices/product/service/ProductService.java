@@ -1,7 +1,5 @@
 package com.microservices.product.service;
 
-import com.microservices.product.dto.ProductRequest;
-import com.microservices.product.dto.ProductResponse;
 import com.microservices.product.model.Product;
 import com.microservices.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,20 +15,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductResponse create(ProductRequest productRequest) {
-        Product product = Product.builder()
-                .name(productRequest.name())
-                .description(productRequest.description())
-                .price(productRequest.price())
-                .build();
-        productRepository.save(product);
+    public Product create(Product productRequest) {
+        Product product = productRepository.save(productRequest);
         log.info("Product created successfully.");
-        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
+        return product;
     }
 
-    public List<ProductResponse> getAll() {
-        return productRepository.findAll().stream()
-                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice()))
-                .toList();
+    public List<Product> getAll() {
+        return productRepository.findAll();
     }
 }
