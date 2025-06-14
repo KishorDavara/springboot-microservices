@@ -1,11 +1,14 @@
 package com.microservices.product.service;
 
 import com.microservices.product.dto.ProductRequest;
+import com.microservices.product.dto.ProductResponse;
 import com.microservices.product.model.Product;
 import com.microservices.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +26,11 @@ public class ProductService {
         productRepository.save(product);
         log.info("Product created successfully.");
         return product;
+    }
+
+    public List<ProductResponse> getAll() {
+        return productRepository.findAll().stream()
+                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice()))
+                .toList();
     }
 }
