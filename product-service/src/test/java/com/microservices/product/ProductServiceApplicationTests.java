@@ -1,8 +1,8 @@
 package com.microservices.product;
 
 import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 
 import static com.microservices.product.TestcontainersConfiguration.mongoDbContainer;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
@@ -29,6 +30,9 @@ class ProductServiceApplicationTests {
     void setup() {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
+        //below 2 lines required because delete api returns text response. if all the methods returns json response then this won't be required.
+        RestAssured.defaultParser = Parser.JSON;
+        RestAssured.registerParser("text/plain", Parser.TEXT); // handles plain text responses
     }
 
     @BeforeAll
@@ -59,9 +63,9 @@ class ProductServiceApplicationTests {
                 .then()
                 .statusCode(HttpStatus.SC_CREATED)
                 .body("id", notNullValue())
-                .body("name", Matchers.equalTo("iphone17"))
-                .body("description", Matchers.equalTo("iphone17 mobile"))
-                .body("price", Matchers.equalTo(140));
+                .body("name", equalTo("iphone17"))
+                .body("description", equalTo("iphone17 mobile"))
+                .body("price", equalTo(140));
     }
 
     @Test
@@ -77,5 +81,17 @@ class ProductServiceApplicationTests {
                 .body("id", everyItem(notNullValue()))
                 .body("name", hasItem("iphone17"))
                 .body("description", hasItem("iphone17 mobile"));
+    }
+
+    @Test
+    @Order(3)
+    void shouldReturnCorrectStatusForDeletingProductWithInvalidId() {
+        RestAssured
+                .given()
+                .when()
+                .delete("/api/products?id=xyz123")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(equalTo("Product with the id xyz123 not exist."));
     }
 }
