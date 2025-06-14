@@ -4,10 +4,12 @@ import com.microservices.product.model.Product;
 import com.microservices.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +24,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product create(@RequestBody Product productRequest){
+    public Product create(@RequestBody Product productRequest) {
         return productService.create(productRequest);
     }
 
@@ -30,5 +32,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public List<Product> getAll() {
         return productService.getAll();
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public String delete(@RequestParam("id") String productId)  {
+        return productService.delete(productId);
     }
 }

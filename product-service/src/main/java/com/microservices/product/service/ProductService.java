@@ -24,4 +24,12 @@ public class ProductService {
     public List<Product> getAll() {
         return productRepository.findAll();
     }
+
+    public String delete(String productId) {
+        if (productRepository.existsById(productId)) {
+            productRepository.deleteById(productId);
+            return "Product with the id " + productId + " deleted successfully";
+        }
+        return "Product with the id " + productId + " not exist.";
+    }
 }
