@@ -11,8 +11,7 @@ class TestcontainersConfiguration {
 
 	@Bean
 	@ServiceConnection
-	MongoDBContainer mongoDbContainer() {
-		return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
+	static MongoDBContainer mongoDbContainer() {
+		return new MongoDBContainer(DockerImageName.parse("mongo:7.0.5"));
 	}
-
 }
