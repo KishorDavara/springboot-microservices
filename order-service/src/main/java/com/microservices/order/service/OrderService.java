@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -18,7 +19,11 @@ public class OrderService {
     public Order placeOrder(Order orderRequest) {
         orderRequest.setOrderNumber(UUID.randomUUID().toString());
         Order order = repository.save(orderRequest);
-        log.info("Order created successfully.");
+        log.info("Order placed successfully.");
         return order;
+    }
+
+    public List<Order> fetchOrders() {
+        return repository.findAll();
     }
 }
