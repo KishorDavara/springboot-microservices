@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 
 import static com.microservices.order.TestcontainersConfiguration.mysqlContainer;
+import static com.microservices.order.stubs.InventoryClientStub.stubInventoryClientCall;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
@@ -21,6 +23,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWireMock(port = 0)
 class OrderServiceApplicationTests {
     @LocalServerPort
     private Integer port;
@@ -51,6 +54,9 @@ class OrderServiceApplicationTests {
                     "quantity": 2
                 }
                 """;
+        //call the inventory client stub method
+        stubInventoryClientCall("iphone_15", 2);
+
         RestAssured
                 .given()
                 .contentType("application/json")
