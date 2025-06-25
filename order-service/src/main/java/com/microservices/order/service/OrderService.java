@@ -1,5 +1,6 @@
 package com.microservices.order.service;
 
+import com.microservices.order.client.InventoryClient;
 import com.microservices.order.model.Order;
 import com.microservices.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,18 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository repository;
+    private final InventoryClient inventoryClient;
 
     public Order placeOrder(Order orderRequest) {
-        orderRequest.setOrderNumber(UUID.randomUUID().toString());
-        Order order = repository.save(orderRequest);
-        log.info("Order placed successfully.");
-        return order;
+        var isInStock = inventoryClient.isInStock(orderRequest.getSkuCode(), orderRequest.getQuantity());
+        if (isInStock) {
+            orderRequest.setOrderNumber(UUID.randomUUID().toString());
+            Order order = repository.save(orderRequest);
+            log.info("Order placed successfully.");
+            return order;
+        } else {
+            throw new RuntimeException("Product with skuCode " + orderRequest.getSkuCode() + " is not in stock");
+        }
     }
 
     public List<Order> fetchOrders() {
